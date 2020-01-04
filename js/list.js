@@ -1,174 +1,133 @@
-(function() {
-    'use strict';
+// FUNCTION THAT CHECKS WHICH WHICH MARK-DONE BUTTON WAS CLICKED
+function completeTask(id) {
+    "use strict";
+    var clickedButton = document.getElementById(id);
+    $(clickedButton).parent("li").toggleClass("strike");
+}
 
-    var d = document,
-        firstTime = true,
-        isDone = true,
-        message = d.getElementById('message'),
-        input = d.getElementById('input'),
-        btnClearTask = d.getElementById('btn-clear-task'),
-        btnAdd = d.getElementById('btn-add'),
-        btnMarkAllDone = d.getElementById('btn-mark-done');
+$(document).ready(function() {
+    // INTIALIZING WOWJS
+    new WOW().init();
 
-    // onload function
-    (function() {
+    // HIDES THE "CLEAR ALL" MESSAGE & LIST DIV
+    $("#message").hide();
 
-        // initializing WOW JS
-        new WOW().init();
+    // GETS ELEMENT'S REFERENCES FROM HTML DOCUMENT
+    "use strict";
+    var addButton = document.getElementById("btn-add");
+    var input = document.getElementById("input");
+    var ul = document.getElementById("list");
+    var clearCompletedTasks = document.getElementById("btn-clear-task");
+    var markAllDone = document.getElementById("btn-mark-done");
+    var markDoneText = document.getElementById("mark-all");
 
-        // add button listeners
-        addButtonListener();
+    // FOCUSING ON THE INPUT WHEN PAGE LOADS
+    input.focus();
 
-        // hide the 'clear all' message & list div
-        message.style.display = 'none';
+    // CREATES A COUNTER THAT WILL BE ASSIGNED TO THE ID
+    var counter = 2;
 
-        // focusing on input after page load
-        // setting input keypress
-        input.focus();
-
-        input.addEventListener('keypress', function(e) {
-            if(e.keyCode === 13) {
-                e.preventDefault();
-                addButton();
-                input.value = '';
-            } 
-        });
-
-        // adding listener to primary button
-        btnAdd.addEventListener('click', addButton);
-
-        // adding listener to 'clear task' button
-        btnClearTask.addEventListener('click', clearCompletedTasks);
-
-        // adding listener to 'mark done' button
-        btnMarkAllDone.addEventListener('click', markAllDone);
-    }());
-
-    // function that adds button listeners
-    function addButtonListener() {
-        var btn = d.getElementsByClassName('mark-done'),
-            i = 0;
-
-        for(; i < btn.length; i++) {
-            btn[i].addEventListener('click', completeTask);
+    // ENTER KEY FUNCTIONING AS BUTTON ON CLICK
+    $("#input").keypress(function(event){
+        if(event.keyCode == 13){
+            event.preventDefault();
+            addButton.click();
+            $("#input").val("");
         }
-    }
+    });
 
-    // function that sets class to button which was clicked
-    function completeTask(e) {
-        var object = e.currentTarget,
-            value = '';
+    // FIRST TIME VARIABLE
+    var firstTime = true;
 
-        value = (object.parentNode.className !== '') ? '' : 'strike';
-        if(object.parentNode.className === 'wow flash') value = 'strike';
-        object.parentNode.setAttribute('class', value);
-    }
-
-    // clearing the default list items if the user enters something for first time
+    // CLEARING THE DEFAULT LIST ITEMS IF THE USER ENTERS SOMETHING FOR FIRST TIME
     function isFirstTime() {
         if(firstTime) {
-            d.getElementById('list').innerHTML = null;
+            // REMOVES ALL THE LIST ITEMS IN THE UL
+            $("#list").empty();
             firstTime = false;
         }
     }
 
-    // when addbutton is clicked
-    function addButton() {
-        if(input.value === '') { 
-            // checks if input is blank, show an alert(for now)
-            alert('Please enter some task.'); 
-        } else {
-            // stores the input value in 'addtask' variable
-            var addTask = input.value,
-                doneButton = d.createElement('button');
-
-            // checks if it's first time entering something
+    // WHEN ADD BUTTON IS CLICKED
+    addButton.onclick = function() {
+        //CHECKS IF INPUT IS BLANK, SHOW AN ALERT (FOR NOW)
+        if(input.value === "") { alert("Please enter some task."); }
+        else {
+            // CHECKS IF IT'S FIRST TIME ENTERING SOMETHING
             isFirstTime();
-
-            // creates a 'mark-done' button element
-            doneButton.className = 'mark-done';
-            doneButton.textContent = 'Done';
-
-            // appends the button to the list item first
+            // STORES THE INPUT VALUE IN 'ADDTASK' VARIABLE
+            var addTask = input.value;
+            // CREATES A 'MARK-DONE' BUTTON ELEMENT
+            var doneButton = document.createElement("button");
+            createDoneButton(doneButton);
+            // APPENDS THE BUTTON TO THE LIST ITEM FIRST
             addToList(doneButton, addTask);
-<<<<<<< HEAD
             $("li").addClass("wow flash");
             // CLEARS THE VALUE IN THE INPUT FIELD
             input.value = "";
         }
-    };
-=======
->>>>>>> 8b335ecfdfb8bc26a75e52a49b64863f40078ea8
-
-            // wow effect
-            doneButton.parentNode.className = 'wow flash';            
-
-            // adds listener to button
-            addButtonListener();
-
-            // clears the value in the input field
-            input.value = '';            
-        }
     }
 
+    // CREATES A NEW DONE BUTTON TO RIGHT OF TASK ITEM
+    function createDoneButton(doneButton) {
+        // ASSIGNS BUTTON CLASS AND ID (ID WILL BE UNIQUE FOR EVERY BUTTON)
+        doneButton.className = "mark-done";
+        doneButton.setAttribute("id", counter);
+        // ASSIGNS ANOTHER ATTRIBUTE, WHICH CALLSBACK THE MARKDONE FUCTION WITH UNIQUE ID
+        doneButton.setAttribute("onclick", "completeTask(this.id)");
+        //INCREMENTS COUNTER VARIABLE
+        counter++;
+        doneButton.textContent = "Done";
+    }
+
+    // ADDS THE BUTTON AND THE TASK ITEM TO THE UNORDERED LIST
     function addToList(button, item) {
-        var ul = d.getElementById('list'),
-            li = d.createElement('li');
-
-        // appends the button to the list item first
+        // CREATES A LIST ITEM ELEMENT
+        var li = document.createElement("li");
+        // APPENDS THE BUTTON TO THE LIST ITEM FIRST
         li.appendChild(button);
-
-        // appends the task by user to list item second
-        li.appendChild(d.createTextNode(item));
-
-        // adds the list item to the end of the unordered list
+        // APPENDS THE TASK BY USER TO LIST ITEM SECOND
+        li.appendChild(document.createTextNode(item));
+        // ADDS THE LIST ITEM TO THE END OF THE UNORDERED LIST
         ul.appendChild(li);
-
-        // hides the message when a task is added
-        message.style.display = 'none';
+        // HIDES THE MESSSAGE WHEN A TASK IS ADDED
+        $("#message").hide();
     }
 
-    function clearCompletedTasks() {
-        var strike = d.getElementsByClassName('strike'),
-            li = d.getElementsByTagName('li'),
-            i = strike.length - 1;
-
-        if(message.style.display === 'block') {
-            alert('All tasks are already cleared.');
-        } else {
-            // removing
-            for(; i >= 0; i--) {
-                strike[i].parentNode.removeChild(strike[i]);
+    // CLEARS ALL THE REMOVED TASKS FROM THE LIST
+    clearCompletedTasks.onclick = function() {
+        if($("#message").is(":visible")) {
+            alert("All tasks are already cleared.");
+        }
+        else {
+            $(".strike").remove();
+            if($("#list li").length === 0) {
+                $("#message").show();
             }
-
-            if(li.length === 0) {
-                message.style.display = 'block';
-            } else {
-                message.style.display = 'none';
-            }
+            else $("#message").hide();
         }
     }
 
-    // mark everything as done or undone at once
-    function markAllDone() {
-        var li = d.getElementsByTagName('li'),
-            markDoneText = d.getElementById('mark-all'),
-            i = 0;
+    // FIRST TIME MARKING DONE
+    var firstTimeDone = true;
 
-        if(isDone) {
-            for(; i < li.length; i++) 
-                li[i].className = 'strike';
-
-            markDoneText.textContent = 'Mark All as Not Done';
-            isDone = false;
-        } else {
-            for(; i < li.length; i++) 
-                li[i].className = '';
-
-            markDoneText.textContent = 'Mark All as Done';
-            isDone = true;           
+    // MARK EVERYTHING AS DONE OR UNDONE AT ONCE
+    markAllDone.onclick = function() {
+        // IF IT IS FIRST TIME, MARK ALL AS DONE
+        if(firstTimeDone) {
+            $("#list li").addClass("strike");
+            markDoneText.textContent = "Mark All as Not Done";
+            firstTimeDone = false;
         }
-
+        // CHECK IF ALL THE ITEMS ARE CHECKED, IF SO, REMOVE THAT CLASS
+        else if ($("#list li").hasClass("strike")) {
+            $("#list li").removeClass("strike");
+            markDoneText.textContent = "Mark All as Done";
+        }
+        // ELSE ADD THE CLASS
+        else {
+            $("#list li").addClass("strike");
+            markDoneText.textContent = "Mark All as Not Done";
+        }
     }
-
-}());
+});
